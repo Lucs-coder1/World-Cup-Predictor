@@ -365,7 +365,39 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-bottom: 14px;
+}
+
+.upset-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 28px;
+}
+
+.upset-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.upset-result {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.upset-chance {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 2px;
 }
 
 .champ-odds-label {
