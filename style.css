@@ -466,6 +466,12 @@ select:focus {
   color: var(--gold);
 }
 
+.match-team.highlight:not(.advanced) {
+  opacity: 1;
+  background: rgba(214, 102, 63, 0.16);
+  color: var(--team2);
+}
+
 .single-slot {
   display: flex;
   align-items: center;
