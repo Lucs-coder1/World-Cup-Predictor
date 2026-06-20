@@ -267,7 +267,7 @@ function renderBracket(result, chosenIdx) {
 
   renderPairRound("slot-sf", sf, final, chosenIdx);
 
-  renderSingleRound("slot-final", final, chosenIdx);
+  renderPairRound("slot-final", [final], [champion], chosenIdx);
 
   renderSingleRound("slot-winner", [champion], chosenIdx);
 }
