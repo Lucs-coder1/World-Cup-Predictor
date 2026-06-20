@@ -1,0 +1,451 @@
+:root {
+  --bg: #0d1117;
+  --surface: #161c26;
+  --surface-raised: #1c2330;
+  --border: #2a3342;
+  --text: #eef1f5;
+  --text-dim: #8b96a5;
+  --text-faint: #5b6573;
+
+  --pitch: #2e7d4f;
+  --pitch-light: #3f9966;
+  --pitch-pale: #16291f;
+
+  --gold: #d4a64a;
+  --gold-pale: #2b2418;
+
+  --team1: #3f8ad6;
+  --team1-pale: #142536;
+  --team2: #d6663f;
+  --team2-pale: #2a1a12;
+  --draw: #5b6573;
+  --draw-pale: #1e232b;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --nav-h: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.panel {
+  padding: 20px 20px 32px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 4px 0 2px;
+  letter-spacing: -0.01em;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin: 0 0 22px;
+}
+
+/* ---- selects ---- */
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+select {
+  width: 100%;
+  appearance: none;
+  background: var(--surface) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%238b96a5" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 12px center;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 13px 38px 13px 14px;
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--pitch-light);
+}
+
+.team-slot {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- matchup row ---- */
+
+.matchup {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.vs {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-faint);
+  padding-bottom: 13px;
+  letter-spacing: 0.05em;
+}
+
+/* ---- odds bar ---- */
+
+.odds-bar {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+
+.bar-seg {
+  transition: width 0.35s ease;
+}
+
+.bar-team1 { background: var(--team1); }
+.bar-team2 { background: var(--team2); }
+.bar-draw  { background: var(--draw); }
+
+/* ---- odds cards ---- */
+
+.odds-cards {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1fr;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.odds-card {
+  border-radius: var(--radius-md);
+  padding: 12px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-team1 { background: var(--team1-pale); }
+.card-team2 { background: var(--team2-pale); }
+.card-draw  { background: var(--draw-pale); }
+
+.odds-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-team1 .odds-label { color: var(--team1); }
+.card-team2 .odds-label { color: var(--team2); }
+
+.odds-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ---- stat table ---- */
+
+.stat-table {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  padding: 7px 0;
+  font-size: 14px;
+}
+
+.stat-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-header span:nth-child(2),
+.stat-header span:nth-child(3) {
+  text-align: center;
+}
+
+.stat-row span:nth-child(2),
+.stat-row span:nth-child(3) {
+  text-align: center;
+  font-weight: 500;
+}
+
+.stat-label {
+  color: var(--text-dim);
+}
+
+/* ---- champion picker ---- */
+
+.champ-select-wrap {
+  margin-bottom: 16px;
+}
+
+.run-btn {
+  width: 100%;
+  background: var(--pitch);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.run-btn:active {
+  transform: scale(0.98);
+  background: var(--pitch-light);
+}
+
+.run-btn:disabled {
+  background: var(--surface-raised);
+  color: var(--text-faint);
+}
+
+.result-area {
+  margin-top: 24px;
+}
+
+.champ-odds-card {
+  background: var(--gold-pale);
+  border: 1px solid rgba(212, 166, 74, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+.champ-odds-label {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.champ-odds-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: -0.02em;
+}
+
+.champ-odds-sub {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.outcome-win { color: var(--gold); }
+.outcome-out { color: var(--text-dim); }
+
+.bracket-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 14px;
+}
+
+.round {
+  margin-bottom: 18px;
+}
+
+.round-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin: 0 0 8px;
+}
+
+.round-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.match-pair {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.match-team {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  min-width: 0;
+}
+
+.match-team-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.match-divider {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.match-team.advanced {
+  color: var(--text);
+  background: var(--pitch-pale);
+}
+
+.match-team.advanced .match-flag {
+  filter: none;
+}
+
+.match-team:not(.advanced) {
+  opacity: 0.55;
+}
+
+.match-team.highlight.advanced {
+  background: rgba(212, 166, 74, 0.18);
+  color: var(--gold);
+}
+
+.single-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.single-slot.highlight {
+  background: rgba(212, 166, 74, 0.18);
+  border-color: rgba(212, 166, 74, 0.4);
+  color: var(--gold);
+}
+
+.match-flag {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ---- bottom nav ---- */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+  height: var(--nav-h);
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.nav-btn.active {
+  color: var(--pitch-light);
+}
+
+@media (min-width: 540px) {
+  #app {
+    max-width: 480px;
+  }
+}
