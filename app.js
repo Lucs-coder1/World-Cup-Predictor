@@ -88,8 +88,29 @@ function updateMatch() {
   document.getElementById("player1").textContent = a.player;
   document.getElementById("player2").textContent = b.player;
 
+  renderHeadToHead(a, b);
+
   // a new matchup invalidates any scoreline shown for the previous one
   document.getElementById("scoreResult").hidden = true;
+}
+
+function renderHeadToHead(a, b) {
+  const el = document.getElementById("h2hBody");
+  const record = getHeadToHead(a.name, b.name);
+
+  if (!record) {
+    el.innerHTML = `<span class="h2h-none">No previous World Cup meeting</span>`;
+    return;
+  }
+
+  const aName = record.perspective === a.name ? a.name : b.name;
+  const bName = record.perspective === a.name ? b.name : a.name;
+  const meetingWord = record.meetings === 1 ? "meeting" : "meetings";
+
+  el.innerHTML = `
+    <span class="h2h-record">${record.meetings} World Cup ${meetingWord}: ${aName} ${record.wins}, Draw ${record.draws}, ${bName} ${record.losses}</span>
+    <span class="h2h-notable">${record.notable}</span>
+  `;
 }
 
 t1Sel.addEventListener("change", updateMatch);
