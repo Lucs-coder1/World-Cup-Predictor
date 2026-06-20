@@ -9,7 +9,7 @@
 <body>
 
 <header class="topbar">
-  <span class="topbar-title">World Cup 2026</span>
+  <span class="topbar-title">World Cup 2026 · 32 teams</span>
 </header>
 
 <main id="app">
@@ -73,6 +73,34 @@
         <span id="best1"></span>
         <span id="best2"></span>
       </div>
+      <div class="stat-row">
+        <span class="stat-label">Best player</span>
+        <span id="player1"></span>
+        <span id="player2"></span>
+      </div>
+    </div>
+
+    <button id="playMatchBtn" class="run-btn play-match-btn">
+      <span id="playMatchBtnLabel">Play match</span>
+    </button>
+
+    <div id="scoreResult" class="score-result" hidden>
+      <div class="score-row">
+        <div class="score-team">
+          <span class="score-flag" id="scoreFlag1"></span>
+          <span class="score-team-name" id="scoreName1"></span>
+        </div>
+        <div class="score-digits">
+          <span id="scoreVal1">0</span>
+          <span class="score-sep">–</span>
+          <span id="scoreVal2">0</span>
+        </div>
+        <div class="score-team score-team-right">
+          <span class="score-team-name" id="scoreName2"></span>
+          <span class="score-flag" id="scoreFlag2"></span>
+        </div>
+      </div>
+      <p class="score-outcome" id="scoreOutcome"></p>
     </div>
   </section>
 
@@ -123,6 +151,11 @@
       <div class="round" id="round-r16">
         <h3 class="round-label">Round of 16</h3>
         <div class="round-teams" id="slot-r16"></div>
+      </div>
+
+      <div class="round" id="round-r32">
+        <h3 class="round-label">Round of 32</h3>
+        <div class="round-teams" id="slot-r32"></div>
       </div>
 
     </div>
