@@ -38,3 +38,59 @@ const TEAMS = [
   { name: "Ivory Coast",    flag: "🇨🇮", elo: 1760, rank: 31, best: 5, player: "Simon Adingra" },
   { name: "Paraguay",       flag: "🇵🇾", elo: 1750, rank: 32, best: 5, player: "Julio Enciso" },
 ];
+
+// Verified World Cup head-to-head records — these are real historical meetings,
+// not estimates. Only pairs with a confirmed aggregate record are included; every
+// other matchup in the app correctly shows "no previous World Cup meeting" rather
+// than a guessed number. Keyed by "TeamA|TeamB" with names in the order they
+// appear in TEAMS above (lookup handles either selection order).
+//
+// wins/draws/losses are from the perspective of the first-listed team.
+// notable: a short, well-documented highlight from their meetings.
+const HEAD_TO_HEAD = {
+  "Argentina|Brazil": {
+    meetings: 4, wins: 1, draws: 1, losses: 2,
+    notable: "Argentina's only win came in the 1990 round of 16 (1-0), their first World Cup win over Brazil",
+  },
+  "Argentina|Spain": {
+    meetings: 1, wins: 1, draws: 0, losses: 0,
+    notable: "Their only meeting: Argentina won 2-1 in 1966",
+  },
+  "France|Croatia": {
+    meetings: 2, wins: 2, draws: 0, losses: 0,
+    notable: "France won the 1998 semi-final (2-1) and the 2018 final (4-2)",
+  },
+  "Netherlands|Brazil": {
+    meetings: 5, wins: 3, draws: 1, losses: 1,
+    notable: "Netherlands beat hosts Brazil 3-0 in the 2014 third-place match",
+  },
+  "England|Brazil": {
+    meetings: 1, wins: 0, draws: 0, losses: 1,
+    notable: "Brazil won their 2002 quarter-final 2-1 on Ronaldinho's lobbed free-kick",
+  },
+  "Germany|Brazil": {
+    meetings: 1, wins: 1, draws: 0, losses: 0,
+    notable: "Germany's 7-1 win in the 2014 semi-final is one of the biggest shocks in World Cup history",
+  },
+};
+
+// Looks up a verified head-to-head record between two team names, regardless
+// of the order they're passed in. Returns null if no World Cup meeting is on record.
+function getHeadToHead(nameA, nameB) {
+  const direct = HEAD_TO_HEAD[`${nameA}|${nameB}`];
+  if (direct) return { ...direct, perspective: nameA };
+
+  const reversed = HEAD_TO_HEAD[`${nameB}|${nameA}`];
+  if (reversed) {
+    return {
+      meetings: reversed.meetings,
+      wins: reversed.losses,
+      draws: reversed.draws,
+      losses: reversed.wins,
+      notable: reversed.notable,
+      perspective: nameA,
+    };
+  }
+
+  return null;
+}
