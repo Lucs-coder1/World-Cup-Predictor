@@ -168,9 +168,12 @@ TEAMS.forEach((t, i) => {
 champSel.value = 0;
 
 function playMatch(i1, i2) {
-  const { f1 } = calcMatchChance(TEAMS[i1], TEAMS[i2]);
+  const { f1, f2 } = calcMatchChance(TEAMS[i1], TEAMS[i2]);
   const roll = Math.random() * 100;
-  return roll < f1 ? i1 : i2;
+  const winner = roll < f1 ? i1 : i2;
+  const loser = winner === i1 ? i2 : i1;
+  const winnerChance = winner === i1 ? f1 : f2;
+  return { winner, loser, winnerChance };
 }
 
 function shuffledIndices(n) {
@@ -188,28 +191,49 @@ function pairUp(list) {
   return pairs;
 }
 
-function playRound(pairs) {
-  return pairs.map((m) => playMatch(m[0], m[1]));
+// Plays every match in a round, returns the winners (for the next round)
+// and records each result (with its winner's win chance) into the upsets log.
+function playRound(pairs, upsetLog) {
+  return pairs.map((m) => {
+    const result = playMatch(m[0], m[1]);
+    upsetLog.push(result);
+    return result.winner;
+  });
 }
 
-// Returns the full 32-team bracket: r32, r16, qf, sf pairs, final pair, and champion index.
+// Returns the full 32-team bracket: r32, r16, qf, sf pairs, final pair, champion index,
+// and a log of every match played (with the winner's pre-match win chance), used to
+// find the biggest upset of the tournament.
 function playTournament() {
+  const upsetLog = [];
   const order = shuffledIndices(32);
   const r32 = pairUp(order);
 
-  const r16Input = playRound(r32);
+  const r16Input = playRound(r32, upsetLog);
   const r16 = pairUp(r16Input);
 
-  const qfInput = playRound(r16);
+  const qfInput = playRound(r16, upsetLog);
   const qf = pairUp(qfInput);
 
-  const sfInput = playRound(qf);
+  const sfInput = playRound(qf, upsetLog);
   const sf = pairUp(sfInput);
 
-  const finalPair = playRound(sf);
-  const champion = playMatch(finalPair[0], finalPair[1]);
+  const finalPair = playRound(sf, upsetLog);
+  const finalResult = playMatch(finalPair[0], finalPair[1]);
+  upsetLog.push(finalResult);
+  const champion = finalResult.winner;
 
-  return { r32, r16, qf, sf, final: finalPair, champion };
+  return { r32, r16, qf, sf, final: finalPair, champion, upsetLog };
+}
+
+// Finds the match where the winner had the lowest win chance —
+// i.e. the most surprising result of this particular simulation.
+function findBiggestUpset(upsetLog) {
+  let biggest = upsetLog[0];
+  for (const m of upsetLog) {
+    if (m.winnerChance < biggest.winnerChance) biggest = m;
+  }
+  return biggest;
 }
 
 function teamChip(idx, advanced, highlightIdx) {
@@ -305,6 +329,22 @@ function setOutcomeLabel(result, chosenIdx) {
   outcomeEl.className = "champ-odds-sub " + (isWin ? "outcome-win" : "outcome-out");
 }
 
+function renderUpset(upsetLog) {
+  const upset = findBiggestUpset(upsetLog);
+  const el = document.getElementById("upsetCard");
+  const winner = TEAMS[upset.winner];
+  const loser = TEAMS[upset.loser];
+
+  // winnerChance is the winner's pre-match win probability, so a low number
+  // here means the winner was a heavy underdog — the lower, the bigger the upset.
+  document.getElementById("upsetWinner").textContent = `${winner.flag} ${winner.name}`;
+  document.getElementById("upsetLoser").textContent = `${loser.flag} ${loser.name}`;
+  document.getElementById("upsetChance").textContent =
+    `Had just a ${upset.winnerChance}% chance to win`;
+
+  el.hidden = false;
+}
+
 const simBtn = document.getElementById("simBtn");
 const simBtnLabel = document.getElementById("simBtnLabel");
 const resultArea = document.getElementById("resultArea");
@@ -339,6 +379,7 @@ function runSimulation() {
 
     setOutcomeLabel(liveResult, chosenIdx);
     renderBracket(liveResult, chosenIdx);
+    renderUpset(liveResult.upsetLog);
 
     resultArea.hidden = false;
     simBtn.disabled = false;
