@@ -241,6 +241,23 @@ select:focus {
   white-space: normal;
 }
 
+.copy-link-btn {
+  margin-top: 20px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.copy-link-btn:active {
+  background: var(--surface);
+}
+
+.copy-link-btn.copied {
+  background: var(--pitch-pale);
+  border-color: var(--pitch);
+  color: var(--pitch-light);
+}
+
 
 
 .champ-select-wrap {
