@@ -57,8 +57,28 @@ TEAMS.forEach((t, i) => {
   t1Sel.add(new Option(`${t.flag} ${t.name}`, i));
   t2Sel.add(new Option(`${t.flag} ${t.name}`, i));
 });
-t1Sel.value = 0;
-t2Sel.value = 2;
+
+// If this page was opened from a shared matchup link (?t1=5&t2=12), use those
+// teams instead of the defaults. Falls back to defaults on any invalid/missing value.
+function readTeamsFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const rawT1 = parseInt(params.get("t1"), 10);
+  const rawT2 = parseInt(params.get("t2"), 10);
+  const valid = (n) => Number.isInteger(n) && n >= 0 && n < TEAMS.length;
+  if (valid(rawT1) && valid(rawT2) && rawT1 !== rawT2) {
+    return { t1: rawT1, t2: rawT2 };
+  }
+  return null;
+}
+
+const sharedTeams = readTeamsFromURL();
+if (sharedTeams) {
+  t1Sel.value = sharedTeams.t1;
+  t2Sel.value = sharedTeams.t2;
+} else {
+  t1Sel.value = 0;
+  t2Sel.value = 2;
+}
 
 // Keeps team1 and team2 from ever being the same team. When one select is
 // changed to match the other, the other one is bumped to the next available team.
@@ -101,12 +121,59 @@ function updateMatch() {
 t1Sel.addEventListener("change", () => {
   preventDuplicateTeam(t1Sel, t2Sel);
   updateMatch();
+  resetCopyLinkButton();
 });
 t2Sel.addEventListener("change", () => {
   preventDuplicateTeam(t2Sel, t1Sel);
   updateMatch();
+  resetCopyLinkButton();
 });
 updateMatch();
+
+// ===================== copy matchup link =====================
+
+const copyLinkBtn = document.getElementById("copyLinkBtn");
+const copyLinkBtnLabel = document.getElementById("copyLinkBtnLabel");
+const COPY_LINK_DEFAULT_TEXT = "🔗 Copy link to this matchup";
+
+function buildMatchupURL() {
+  const url = new URL(window.location.href);
+  url.search = ""; // drop any existing query params before setting fresh ones
+  url.searchParams.set("t1", t1Sel.value);
+  url.searchParams.set("t2", t2Sel.value);
+  return url.toString();
+}
+
+function resetCopyLinkButton() {
+  copyLinkBtn.classList.remove("copied");
+  copyLinkBtnLabel.textContent = COPY_LINK_DEFAULT_TEXT;
+}
+
+async function copyMatchupLink() {
+  const link = buildMatchupURL();
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(link);
+    } else {
+      // fallback for browsers/contexts without Clipboard API support
+      const tempInput = document.createElement("textarea");
+      tempInput.value = link;
+      tempInput.style.position = "fixed";
+      tempInput.style.opacity = "0";
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+    }
+    copyLinkBtn.classList.add("copied");
+    copyLinkBtnLabel.textContent = "✓ Link copied!";
+  } catch (err) {
+    copyLinkBtnLabel.textContent = "Couldn't copy — try again";
+  }
+  setTimeout(resetCopyLinkButton, 2000);
+}
+
+copyLinkBtn.addEventListener("click", copyMatchupLink);
 
 // ===================== champion picker =====================
 
