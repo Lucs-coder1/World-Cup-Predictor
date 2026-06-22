@@ -60,6 +60,15 @@ TEAMS.forEach((t, i) => {
 t1Sel.value = 0;
 t2Sel.value = 2;
 
+// Keeps team1 and team2 from ever being the same team. When one select is
+// changed to match the other, the other one is bumped to the next available team.
+function preventDuplicateTeam(changedSel, otherSel) {
+  if (changedSel.value !== otherSel.value) return;
+  const changedIdx = parseInt(changedSel.value, 10);
+  const nextIdx = (changedIdx + 1) % TEAMS.length;
+  otherSel.value = nextIdx;
+}
+
 function updateMatch() {
   const i1 = parseInt(t1Sel.value, 10);
   const i2 = parseInt(t2Sel.value, 10);
@@ -87,77 +96,17 @@ function updateMatch() {
   document.getElementById("best2").textContent = ordinal(b.best);
   document.getElementById("player1").textContent = a.player;
   document.getElementById("player2").textContent = b.player;
-
-  // a new matchup invalidates any scoreline shown for the previous one
-  document.getElementById("scoreResult").hidden = true;
 }
 
-t1Sel.addEventListener("change", updateMatch);
-t2Sel.addEventListener("change", updateMatch);
+t1Sel.addEventListener("change", () => {
+  preventDuplicateTeam(t1Sel, t2Sel);
+  updateMatch();
+});
+t2Sel.addEventListener("change", () => {
+  preventDuplicateTeam(t2Sel, t1Sel);
+  updateMatch();
+});
 updateMatch();
-
-// ===================== play match (scoreline) =====================
-// Reuses the exact win/draw/loss percentages already shown on the odds bar,
-// then invents a plausible scoreline consistent with that outcome.
-
-function randomGoals(maxLikely) {
-  // weighted toward low scores, like real football
-  const weights = [0.30, 0.32, 0.22, 0.11, 0.04, 0.01];
-  let roll = Math.random();
-  for (let g = 0; g < weights.length; g++) {
-    roll -= weights[g];
-    if (roll <= 0) return g;
-  }
-  return weights.length - 1;
-}
-
-function generateScoreline(outcome) {
-  // outcome: "team1", "draw", or "team2"
-  if (outcome === "draw") {
-    const g = randomGoals();
-    return [g, g];
-  }
-  const winnerGoals = Math.max(1, randomGoals());
-  // loser scores fewer goals than the winner, with the same shape of bias toward low scores
-  const loserGoals = Math.floor(Math.random() * winnerGoals);
-  return outcome === "team1" ? [winnerGoals, loserGoals] : [loserGoals, winnerGoals];
-}
-
-function playMatchScore() {
-  const i1 = parseInt(t1Sel.value, 10);
-  const i2 = parseInt(t2Sel.value, 10);
-  const a = TEAMS[i1];
-  const b = TEAMS[i2];
-  const { f1, f2, draw } = calcMatchChance(a, b);
-
-  const roll = Math.random() * 100;
-  let outcome;
-  if (roll < f1) outcome = "team1";
-  else if (roll < f1 + draw) outcome = "draw";
-  else outcome = "team2";
-
-  const [g1, g2] = generateScoreline(outcome);
-
-  document.getElementById("scoreFlag1").textContent = a.flag;
-  document.getElementById("scoreFlag2").textContent = b.flag;
-  document.getElementById("scoreName1").textContent = a.name;
-  document.getElementById("scoreName2").textContent = b.name;
-  document.getElementById("scoreVal1").textContent = g1;
-  document.getElementById("scoreVal2").textContent = g2;
-
-  const outcomeEl = document.getElementById("scoreOutcome");
-  if (outcome === "draw") {
-    outcomeEl.textContent = "It's a draw";
-  } else if (outcome === "team1") {
-    outcomeEl.textContent = `${a.name} win`;
-  } else {
-    outcomeEl.textContent = `${b.name} win`;
-  }
-
-  document.getElementById("scoreResult").hidden = false;
-}
-
-document.getElementById("playMatchBtn").addEventListener("click", playMatchScore);
 
 // ===================== champion picker =====================
 
@@ -166,6 +115,14 @@ TEAMS.forEach((t, i) => {
   champSel.add(new Option(`${t.flag} ${t.name}`, i));
 });
 champSel.value = 0;
+
+// Switching teams invalidates whatever bracket is currently shown —
+// it belonged to the previous team's run, so hide it until a new simulation is run.
+champSel.addEventListener("change", () => {
+  document.getElementById("resultArea").hidden = true;
+  document.getElementById("upsetCard").hidden = true;
+  simBtnLabel.textContent = "Run simulation";
+});
 
 function playMatch(i1, i2) {
   const { f1, f2 } = calcMatchChance(TEAMS[i1], TEAMS[i2]);
